@@ -1,0 +1,34 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "us-east1-docker.pkg.dev/sincere-lexicon-417511/b00965752-c1-artifact-registry/b00965752-c1",
+        ".",
+      ]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "us-east1-docker.pkg.dev/sincere-lexicon-417511/b00965752-c1-artifact-registry/b00965752-c1",
+      ]
+  - name: "gcr.io/cloud-builders/kubectl"
+    args:
+      [
+        "set",
+        "image",
+        "deployment/poddeployment",
+        "pod-container-1=us-east1-docker.pkg.dev/sincere-lexicon-417511/b00965752-c1-artifact-registry/b00965752-c1",
+      ]
+  - name: "gcr.io/cloud-builders/kubectl"
+    args:
+      [ "rollout", "restart", "deployment/poddeployment" ]
+
+options:
+    env:
+      - "CLOUDSDK_COMPUTE_ZONE=us-east1-b"
+      - "CLOUDSDK_CONTAINER_CLUSTER=csci5409-b00965752-cluster"
+    logging: CLOUD_LOGGING_ONLY
+
